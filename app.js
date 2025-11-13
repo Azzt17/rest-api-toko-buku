@@ -2,12 +2,19 @@ const express = require('express');
 const app = express();
 const port = 3000;
 
-// middleware
+// middleware custom
+const myLogger = (req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+};
+app.use(myLogger);
+
+// middleware bawaan untuk parsing JSON
 app.use(express.json()); 
 
 const bookRoutes = require('./routes/bookRoutes');
 
-// rute pengujian
+// rute dasar untuk pengujian
 app.get('/', (req, res) => {
   res.send('Selamat Datang di API Toko Buku!');
 });
