@@ -1,15 +1,25 @@
 const express = require('express');
-const router = express.Router(); // Buat instance Router
-let books = require('../db.js'); // Impor data dummy
+const router = express.Router();
+let books = require('../db.js');
 
-// GET /books - Mendapatkan data semua buku
+// middleware validasi untuk POST /books
+const validateBook = (req, res, next) => {
+  const { title, author } = req.body;
+  if (!title || !author) {
+    return res.status(400).json({ message: 'Title dan Author wajib diisi' });
+  }
+  next();
+};
+
+// GET /books - Mendapatkan semua buku
 router.get('/', (req, res) => {
   res.json(books);
 });
 
 // POST /books - Membuat buku baru
-router.post('/', (req, res) => {
-  const { title, author } = req.body; // Membutuhkan express.json()
+// menerapkan middleware validasi
+router.post('/', validateBook, (req, res) => {
+  const { title, author } = req.body;
   const newId = books.length > 0 ? books[books.length - 1].id + 1 : 1;
   const newBook = { id: newId, title, author };
   books.push(newBook);
@@ -43,4 +53,4 @@ router.delete('/:id', (req, res) => {
   res.status(204).send();
 });
 
-module.exports = router; 
+module.exports = router;
