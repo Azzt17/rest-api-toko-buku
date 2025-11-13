@@ -9,7 +9,8 @@ const myLogger = (req, res, next) => {
 };
 app.use(myLogger);
 
-// middleware bawaan untuk parsing JSON
+// middleware bawaan
+app.use(express.static('public'));
 app.use(express.json()); 
 
 const bookRoutes = require('./routes/bookRoutes');
@@ -20,6 +21,14 @@ app.get('/', (req, res) => {
 });
 
 app.use('/books', bookRoutes);
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ 
+    message: 'Terjadi kesalahan di server',
+    error: err.message 
+  });
+});
 
 app.listen(port, () => {
   console.log(`Server berjalan di http://localhost:${port}`);
